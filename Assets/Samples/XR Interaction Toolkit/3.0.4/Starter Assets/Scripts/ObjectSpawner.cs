@@ -1,7 +1,9 @@
+using Codice.CM.Common.Serialization.Replication;
 using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine.XR.Interaction.Toolkit.Utilities;
-
+using UnityEngine;
 namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 {
 
@@ -31,6 +33,10 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         [Tooltip("The list of prefabs available to spawn.")]
         List<GameObject> m_ObjectPrefabs = new List<GameObject>();
 
+        [SerializeField]
+        [Tooltip("The list of prefabs instructions.")]
+        List<String> m_ObjectPrefabsInstructions = new List<String>();
+
         /// <summary>
         /// The list of prefabs available to spawn.
         /// </summary>
@@ -38,6 +44,15 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         {
             get => m_ObjectPrefabs;
             set => m_ObjectPrefabs = value;
+        }
+
+        /// <summary>
+        /// The list of prefabs istructions.
+        /// </summary>
+        public List<String> ObjectPrefabsInstructions
+        {
+            get => m_ObjectPrefabsInstructions;
+            set => m_ObjectPrefabsInstructions = value;
         }
 
         [SerializeField]
@@ -147,10 +162,17 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             set => m_SpawnAsChildren = value;
         }
         [SerializeField]
-        private bool _isCarSpawned = false;
-        public bool IsCarSpawned()
+        private bool _readyGame = false;
+        public bool IsReadyGame()
         {
-            return _isCarSpawned;
+            return _readyGame;
+        }
+
+        [SerializeField]
+        private int objectIndex = 0;
+        public int GetObjectIndex()
+        {
+            return objectIndex;
         }
 
         /// <summary>
@@ -199,6 +221,12 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         /// <seealso cref="objectSpawned"/>
         public bool TrySpawnObject(Vector3 spawnPoint, Vector3 spawnNormal)
         {
+            if (objectIndex > m_ObjectPrefabs.Count - 1)
+            {
+                Debug.LogError("Object capaticy has reached!");
+                return false;
+            }
+
             //Debug.Log("Spawn normal: " + spawnNormal);
             // Check if the plane is vertical
             if (spawnNormal.y != 1)
@@ -206,9 +234,6 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 Debug.LogError("Desired plane is vertical!");
                 return false;
             }
-
-            if (_isCarSpawned)
-                return false;
 
             if (m_OnlySpawnInView)
             {
@@ -222,7 +247,6 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 }
             }
 
-            var objectIndex = isSpawnOptionRandomized ? Random.Range(0, m_ObjectPrefabs.Count) : m_SpawnOptionIndex;
             var newObject = Instantiate(m_ObjectPrefabs[objectIndex]);
             if (m_SpawnAsChildren)
                 newObject.transform.parent = transform;
@@ -233,19 +257,8 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             var facePosition = m_CameraToFace.transform.position;
             var forward = facePosition - spawnPoint;
             BurstMathUtility.ProjectOnPlane(forward, spawnNormal, out var projectedForward);
-            //newObject.transform.rotation = Quaternion.LookRotation(projectedForward, spawnNormal);
 
-            // Remove the random angle application
-            /*
-            if (m_ApplyRandomAngleAtSpawn)
-            {
-                var randomRotation = Random.Range(-m_SpawnAngleRange, m_SpawnAngleRange);
-                newObject.transform.Rotate(Vector3.up, randomRotation);
-            }
-            */
-
-            // Apply a fixed rotation angle
-            float fixedAngle = 0f; // Specify the fixed angle you want
+            float fixedAngle = 0f;
             newObject.transform.Rotate(Vector3.up, fixedAngle);
 
             if (m_SpawnVisualizationPrefab != null)
@@ -257,7 +270,20 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
             objectSpawned?.Invoke(newObject);
 
-            _isCarSpawned = true;
+            if (objectIndex != m_ObjectPrefabs.Count)
+            {
+                objectIndex++;
+
+                if (objectIndex != m_ObjectPrefabs.Count)
+                    InstructionManager.Instance.ShowInstruction(m_ObjectPrefabsInstructions[objectIndex]);
+
+                if (objectIndex == m_ObjectPrefabs.Count)
+                {
+                    InstructionManager.Instance.HideInstruction();
+                    _readyGame = true;
+                }
+            }
+            
             return true;
         }
 

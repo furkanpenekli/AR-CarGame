@@ -4,6 +4,7 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 public class PlayButton : MonoBehaviour
 {
+    [Tooltip("These objects will be hidden before the game starts.")]
     [SerializeField]
     private List<GameObject> _objects = new List<GameObject>();
 
@@ -13,6 +14,7 @@ public class PlayButton : MonoBehaviour
     private PlaygroundManager _playgroundManager;
     [SerializeField]
     private AROcclusionManager occlusionManager;
+
     private void Start()
     {
         _objectSpawner = FindObjectOfType<ObjectSpawner>();
@@ -24,7 +26,7 @@ public class PlayButton : MonoBehaviour
     }
     public void Play()
     {
-        allowPlay = _objectSpawner.IsCarSpawned();
+        allowPlay = _objectSpawner.IsReadyGame();
 
         if (!allowPlay)
             return;
