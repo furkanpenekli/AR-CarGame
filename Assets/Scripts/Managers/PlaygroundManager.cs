@@ -26,6 +26,8 @@ public class PlaygroundManager : MonoBehaviour
     private int _spawnPointCount;
     public int spawnPointCount { get { return _spawnPointCount; } }
 
+    [SerializeField]
+    private GameObject _winPanel;
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -42,6 +44,7 @@ public class PlaygroundManager : MonoBehaviour
     {
         _carInput = FindObjectOfType<CarInput>();
 
+        _winPanel.SetActive(false);
         _isPlaying = false;
     }
     public void Enable()
@@ -49,6 +52,9 @@ public class PlaygroundManager : MonoBehaviour
         _finalLine = FindAnyObjectByType<FinalLine>();
 
         _plane = _spawnTrigger.playgroundPlane;
+        _plane.tag = "Plane";
+
+        Debug.Log("Plane size: " + _plane.size + "\n Plane boundary: " + _plane.boundary);
         _carInput._allowMove = true;
         _isPlaying = true;
 
@@ -61,7 +67,20 @@ public class PlaygroundManager : MonoBehaviour
 
     public void GameOver()
     {
-        Debug.Log("Game Over!");
+        if (PointManager.Instance.IsPointFilledToMax())
+        {
+            _winPanel.SetActive(true);
+            PauseGame();
+            Debug.Log("Game Over!");
+        }
+    }
+
+    /// <summary>
+    /// Pauses game use with time scale.
+    /// </summary>
+    private void PauseGame()
+    {
+        Time.timeScale = 0.0f;
     }
 
     /// <summary>
@@ -79,36 +98,59 @@ public class PlaygroundManager : MonoBehaviour
 
     private void SpawnCollectibles()
     {
-        Vector3 planeCenter = _plane.center;
-        int attempts = 0;
-        int maxAttempts = 100;
-
-        for (int i = 0; i < _spawnPointCount; i++)
+        int currentObjects = 0;
+        while (currentObjects < spawnPointCount)
         {
-            bool pointFound = false;
+            // Get a random point within the plane's bounds
+            Vector3 randomPoint = GetRandomPointOnPlane(_plane);
+            // Make sure the y-position is aligned with the plane
+            randomPoint.y = _plane.transform.position.y;
 
-            while (!pointFound && attempts < maxAttempts)
+            // Get the bounds of the plane (assuming the plane has a collider or you know its dimensions)
+            Collider planeCollider = _plane.GetComponent<Collider>();
+
+            // Check if the random point is within the plane's collider bounds
+            if (planeCollider.bounds.Contains(randomPoint))
             {
-                Vector3 randomPoint = GetRandomPointOnPlane(_plane);
-                randomPoint.y = planeCenter.y;
-
-                // If 
-                if (!Physics.CheckSphere(randomPoint, 0.05f))
+                // Optionally use Physics.CheckSphere to check for overlap with other objects
+                if (Physics.CheckSphere(randomPoint, 0.5f) != gameObject.CompareTag("MeshedObject"))
                 {
+                    // Instantiate the object if the point is valid and no other objects are overlapping
                     Instantiate(_currentCollectible, randomPoint, Quaternion.identity);
-                    pointFound = true;
+                    currentObjects++;
                 }
-
-                attempts++;
-            }
-
-            if (attempts >= maxAttempts)
-            {
-                break;
             }
         }
+
     }
-    private Vector3 GetRandomPointOnPlane(ARPlane plane)
+    Vector3 GetRandomPointOnPlane(ARPlane plane)
+    {
+        // ARPlane'in sınır noktalarını al
+        var boundaryPoints = plane.boundary;
+
+        // Minimum ve maksimum x, y koordinatlarını bul
+        float minX = float.MaxValue, maxX = float.MinValue;
+        float minY = float.MaxValue, maxY = float.MinValue;
+
+        foreach (var point in boundaryPoints)
+        {
+            if (point.x < minX)
+                minX = point.x;
+            if (point.x > maxX)
+                maxX = point.x;
+            if (point.y < minY)
+                minY = point.y;
+            if (point.y > maxY)
+                maxY = point.y;
+        }
+
+        // Rastgele bir x ve y koordinatı seç
+        float randomX = Random.Range(minX, maxX);
+        float randomY = Random.Range(minY, maxY);
+
+        return new Vector3(randomX, plane.transform.position.y, randomY);
+    }
+    private Vector3 GetRandomPointOnPlane2(ARPlane plane)
     {
         if (plane.boundary.Length < 3)
         {
@@ -130,8 +172,8 @@ public class PlaygroundManager : MonoBehaviour
         centroid /= plane.boundary.Length;
 
         // Select two random boundary points
-        int index1 = Random.Range(0, plane.boundary.Length);
-        int index2 = (index1 + 1) % plane.boundary.Length;
+        int index1 = (int)Random.Range(0, plane.size.y);
+        int index2 = (index1 + 1) % (int)plane.size.x;
 
         Vector2 vertex1 = plane.boundary[index1];
         Vector2 vertex2 = plane.boundary[index2];
@@ -159,7 +201,7 @@ public class PlaygroundManager : MonoBehaviour
         return v1 + u * (v2 - v1) + v * (v3 - v1);
     }
 
-    /*private Vector3 GetRandomPointOnPlane(ARPlane plane)
+    private Vector3 GetRandomPointOnPlane3(ARPlane plane)
     {
         Vector3 randomPoint = Vector3.zero;
 
@@ -170,7 +212,7 @@ public class PlaygroundManager : MonoBehaviour
         }
 
         return randomPoint;
-    }*/
+    }
 }
 
 

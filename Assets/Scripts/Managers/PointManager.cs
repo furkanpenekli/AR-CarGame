@@ -56,4 +56,11 @@ public class PointManager : MonoBehaviour
         _text.text = _currentPoint.ToString() + "/" + _maxPoint.ToString();
     }
 
+    public bool IsPointFilledToMax()
+    {
+        if (_currentPoint >= _maxPoint)
+            return true;
+
+        return false;
+    }
 }
