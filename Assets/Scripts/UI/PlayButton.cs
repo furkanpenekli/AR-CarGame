@@ -35,8 +35,6 @@ public class PlayButton : MonoBehaviour
 
         SetObjectsIsActive(true);
         gameObject.SetActive(false);
-
-        //occlusionManager.requestedEnvironmentDepthMode = UnityEngine.XR.ARSubsystems.EnvironmentDepthMode.Best;
     }
 
     private void SetObjectsIsActive(bool value)

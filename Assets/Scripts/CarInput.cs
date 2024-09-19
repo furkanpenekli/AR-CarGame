@@ -21,12 +21,6 @@ public class CarInput : MonoBehaviour
 
         verticalInput = _joystick.Vertical;
         horizontalInput = _joystick.Horizontal;
-
-        //if (Input.GetMouseButtonUp(0))
-        //{
-        //    verticalInput = 0f;
-        //    horizontalInput = 0f;
-        //}
     }
 
     public void ForwardButtonDown()
