@@ -1,10 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ExitButton : MonoBehaviour
+public class ExitButton : MyButton
 {
-    public void Exit()
+    private void Start()
+    {
+        base.Start();
+    }
+    public override void ButtonClicked()
+    {
+        Exit();
+    }
+
+    private void Exit()
     {
         Application.Quit();
 

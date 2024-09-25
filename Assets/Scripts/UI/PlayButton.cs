@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
-public class PlayButton : MonoBehaviour
+public class PlayButton : MyButton
 {
     [Tooltip("These objects will be hidden before the game starts.")]
     [SerializeField]
@@ -12,19 +11,25 @@ public class PlayButton : MonoBehaviour
 
     private ObjectSpawner _objectSpawner;
     private PlaygroundManager _playgroundManager;
-    [SerializeField]
-    private AROcclusionManager occlusionManager;
 
     private void Start()
     {
+        base.Start();
+
         _objectSpawner = FindObjectOfType<ObjectSpawner>();
         _playgroundManager = FindObjectOfType<PlaygroundManager>();
 
         allowPlay = false;
 
-        SetObjectsIsActive(false);    
+        SetObjectsIsActive(false);
     }
-    public void Play()
+
+    public override void ButtonClicked()
+    {
+        Play();
+    }
+
+    private void Play()
     {
         allowPlay = _objectSpawner.IsReadyGame();
 

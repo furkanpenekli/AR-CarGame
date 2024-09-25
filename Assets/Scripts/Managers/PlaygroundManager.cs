@@ -164,17 +164,11 @@ public class PlaygroundManager : MonoBehaviour
         return new Vector3(randomX, plane.transform.position.y, randomY);
     }
     /// <summary>
-    /// In progress.
+    /// 
     /// </summary>
     public void ResetGame()
     {
-        _winPanel.SetActive(false);
-        _isPlaying = false;
-        
-        // Destroy car.
-        Destroy(FindObjectOfType<CarMovement>());
-        // Destroy final line.
-        Destroy(FindObjectOfType<FinalLine>());
+
     }
 }
 
