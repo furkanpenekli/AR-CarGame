@@ -336,7 +336,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         }*/
 
         /// <summary>
-        /// Destroys a specific object in the currentSpawnedObjects list by its index.
+        /// Destroys a specific object in the currentSpawnedObjects list by given index.
         /// </summary>
         /// <param name="index">The index of the object to destroy.</param>
         public void DestroyObject(int index)
