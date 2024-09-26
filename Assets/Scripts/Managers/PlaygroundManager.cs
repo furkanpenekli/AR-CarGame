@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.XR.ARCore;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Interaction.Toolkit.Samples.ARStarterAssets;
 public class PlaygroundManager : MonoBehaviour
 {
     public static PlaygroundManager Instance { get; private set; }
 
-    [SerializeField]
     private ARInteractorSpawnTrigger _spawnTrigger;
-    [SerializeField]
     private ARPlaneManager _planeManager;
+    private ARSession _arSession;
 
     private CarInput _carInput;
 
@@ -21,6 +22,9 @@ public class PlaygroundManager : MonoBehaviour
 
     [SerializeField]
     private Collectible _currentCollectible;
+
+    [SerializeField]
+    private Material _planeMaterial;
 
     [SerializeField]
     private int _spawnPointCount;
@@ -43,6 +47,9 @@ public class PlaygroundManager : MonoBehaviour
     private void Start()
     {
         _carInput = FindObjectOfType<CarInput>();
+        _spawnTrigger = FindObjectOfType<ARInteractorSpawnTrigger>();
+        _planeManager = FindObjectOfType<ARPlaneManager>();
+        _arSession = FindObjectOfType<ARSession>();
 
         _winPanel.SetActive(false);
         _isPlaying = false;
@@ -54,6 +61,12 @@ public class PlaygroundManager : MonoBehaviour
         _plane = _spawnTrigger.playgroundPlane;
         _plane.tag = "Plane";
 
+        var meshRenderer = _plane.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            meshRenderer.material = _planeMaterial;
+        }
+
         Debug.Log("Plane size: " + _plane.size + "\n Plane boundary: " + _plane.boundary);
         _carInput._allowMove = true;
         _isPlaying = true;
@@ -63,6 +76,8 @@ public class PlaygroundManager : MonoBehaviour
         _planeManager.enabled = false;
 
         SpawnCollectibles();
+
+        //_plane.transform.localScale = _plane.transform.localScale * 10;
     }
 
     public void GameOver()
@@ -101,6 +116,7 @@ public class PlaygroundManager : MonoBehaviour
     private void SpawnCollectibles()
     {
         int currentObjects = 0;
+
         // Get the bounds of the plane (assuming the plane has a collider or you know its dimensions)
         Collider planeCollider = _plane.GetComponent<Collider>();
 
@@ -111,25 +127,31 @@ public class PlaygroundManager : MonoBehaviour
 
             // Make sure the y-position is aligned with the plane
             randomPoint.y = _plane.transform.position.y;
-            
+
             // Check if the random point is within the plane's collider bounds
             if (planeCollider.bounds.Contains(randomPoint))
             {
                 Collider[] hitColliders = Physics.OverlapSphere(randomPoint, 10f);
+
                 foreach (var hitCollider in hitColliders)
                 {
-                    if (   !hitCollider.CompareTag("MeshedObject")
-                        || !hitCollider.CompareTag("Car") 
-                        || !hitCollider.CompareTag("PrefabObject"))
+                    if (!hitCollider.CompareTag("MeshedObject")
+                        && !hitCollider.CompareTag("Car")
+                        && !hitCollider.CompareTag("PrefabObject"))
                     {
-                        Instantiate(_currentCollectible, randomPoint, Quaternion.identity);
-                        currentObjects++;
-                        break;
+                        if (hitCollider.CompareTag("Plane"))
+                        {
+                            Debug.Log("Spawned " + _currentCollectible.name + " " + currentObjects+1 + " times.");
+                            Instantiate(_currentCollectible, randomPoint, Quaternion.identity);
+                            currentObjects++;
+                            break;
+                        }
                     }
                 }
             }
         }
     }
+
 
     /// <summary>
     /// Get random point on desired ARPlane.
@@ -162,13 +184,6 @@ public class PlaygroundManager : MonoBehaviour
         float randomY = Random.Range(minY, maxY);
 
         return new Vector3(randomX, plane.transform.position.y, randomY);
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    public void ResetGame()
-    {
-
     }
 }
 

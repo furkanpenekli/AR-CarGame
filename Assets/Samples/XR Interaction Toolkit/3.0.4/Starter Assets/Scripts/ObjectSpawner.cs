@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using UnityEngine.XR.Interaction.Toolkit.Utilities;
 using UnityEngine;
+using System.Linq;
 namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 {
 
@@ -44,6 +45,8 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             get => m_ObjectPrefabs;
             set => m_ObjectPrefabs = value;
         }
+
+        public List<GameObject> currentSpawnedObjects = new List<GameObject>();
 
         /// <summary>
         /// The list of prefabs istructions.
@@ -247,6 +250,8 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             }
 
             var newObject = Instantiate(m_ObjectPrefabs[objectIndex]);
+            currentSpawnedObjects.Add(newObject);
+
             if (m_SpawnAsChildren)
                 newObject.transform.parent = transform;
 
@@ -329,5 +334,29 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             objectSpawned?.Invoke(newObject);
             return true;
         }*/
+
+        /// <summary>
+        /// Destroys a specific object in the currentSpawnedObjects list by its index.
+        /// </summary>
+        /// <param name="index">The index of the object to destroy.</param>
+        public void DestroyObject(int index)
+        {
+            var gameObject = currentSpawnedObjects[index];
+            if (currentSpawnedObjects.Contains(gameObject))
+            {
+                currentSpawnedObjects.Remove(gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Destroys all objects in the currentSpawnedObjects list.
+        /// </summary>
+        public void DestroyAllObjects()
+        {
+            for (int i = 0; i < currentSpawnedObjects.Count; i++)
+            {
+                DestroyObject(i);
+            }
+        }
     }
 }

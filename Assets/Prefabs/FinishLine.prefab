@@ -120,7 +120,7 @@ GameObject:
   - component: {fileID: -3206188097768425982}
   - component: {fileID: 2035969684327323255}
   m_Layer: 0
-  m_Name: FinalLine
+  m_Name: FinishLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -177,8 +177,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 20, z: 41.2}
-  m_Center: {x: 30.63, y: 7.6, z: 0}
+  m_Size: {x: 9.823519, y: 19.999998, z: 46.83}
+  m_Center: {x: 26.218227, y: 7.6000004, z: 0}
 --- !u!1 &3813673948535824282
 GameObject:
   m_ObjectHideFlags: 0

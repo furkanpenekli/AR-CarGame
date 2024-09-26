@@ -15,6 +15,6 @@ public class ReplayButton : MyButton
     /// </summary>
     private void ReplayGame()
     {
-        PlaygroundManager.Instance.ResetGame();
+        ReloadManager.Instance.ResetGame();
     }
 }

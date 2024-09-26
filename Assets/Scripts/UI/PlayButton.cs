@@ -20,8 +20,6 @@ public class PlayButton : MyButton
         _playgroundManager = FindObjectOfType<PlaygroundManager>();
 
         allowPlay = false;
-
-        SetObjectsIsActive(false);
     }
 
     public override void ButtonClicked()
