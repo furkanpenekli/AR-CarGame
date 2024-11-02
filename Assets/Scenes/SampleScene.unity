@@ -1071,6 +1071,7 @@ MonoBehaviour:
   m_ObjectPrefabsInstructions:
   - Place the car.
   - Place finish line.
+  currentSpawnedObjects: []
   m_SpawnVisualizationPrefab: {fileID: 0}
   m_SpawnOptionIndex: 0
   m_OnlySpawnInView: 1
@@ -1382,7 +1383,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &617626119
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2492,7 +2493,7 @@ MonoBehaviour:
   _currentCollectible: {fileID: 8756828011940874768, guid: dbc0a0370fecb034995428771392aa84,
     type: 3}
   _planeMaterial: {fileID: 2100000, guid: fee945eaddd2cb24592be6a061d4ecf2, type: 2}
-  _spawnPointCount: 2
+  _spawnPointCount: 6
   _winPanel: {fileID: 617626118}
 --- !u!4 &1388595325
 Transform:
@@ -3266,6 +3267,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ReplayButton (Legacy)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093029974583362401, guid: 22464b57b374ce441be365ff60c86eb1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6741773326645153848, guid: 22464b57b374ce441be365ff60c86eb1,
         type: 3}

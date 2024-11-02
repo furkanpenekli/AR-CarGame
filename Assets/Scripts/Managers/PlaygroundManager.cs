@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.XR.ARCore;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Interaction.Toolkit.Samples.ARStarterAssets;
 public class PlaygroundManager : MonoBehaviour
@@ -18,7 +17,8 @@ public class PlaygroundManager : MonoBehaviour
 
     private bool _isPlaying;
 
-    private FinalLine _finalLine;
+    private FinalLine _finishLine;
+    private CarMovement _car;
 
     [SerializeField]
     private Collectible _currentCollectible;
@@ -29,6 +29,9 @@ public class PlaygroundManager : MonoBehaviour
     [SerializeField]
     private int _spawnPointCount;
     public int spawnPointCount { get { return _spawnPointCount; } }
+
+    private List<Collectible> _collectibles = new List<Collectible>();
+    public List<Collectible> collectibles { get { return _collectibles; } }
 
     [SerializeField]
     private GameObject _winPanel;
@@ -56,7 +59,8 @@ public class PlaygroundManager : MonoBehaviour
     }
     public void Enable()
     {
-        _finalLine = FindAnyObjectByType<FinalLine>();
+        _finishLine = FindAnyObjectByType<FinalLine>();
+        _car = FindAnyObjectByType<CarMovement>();
 
         _plane = _spawnTrigger.playgroundPlane;
         _plane.tag = "Plane";
@@ -75,7 +79,7 @@ public class PlaygroundManager : MonoBehaviour
         //Turn off finding new planes.
         _planeManager.enabled = false;
 
-        SpawnCollectibles();
+        SpawnCollectibles(spawnPointCount);
 
         //_plane.transform.localScale = _plane.transform.localScale * 10;
     }
@@ -110,6 +114,18 @@ public class PlaygroundManager : MonoBehaviour
         }
     }
 
+    private void SpawnCollectibles(int count)
+    {
+        for (int i = 0; i <= count; i++)
+        {
+            float t = (float) i / (float) count;
+            Vector3 spawnPosition = Vector3.Lerp(_car.transform.position, _finishLine.transform.position, t);
+
+            var collectible = Instantiate(_currentCollectible, spawnPosition, Quaternion.identity);
+            _collectibles.Add(collectible);
+        }
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -117,18 +133,19 @@ public class PlaygroundManager : MonoBehaviour
     {
         int currentObjects = 0;
 
-        // Get the bounds of the plane (assuming the plane has a collider or you know its dimensions)
+        // Get the bounds of the plane (assuming the plane has a collider or you know its dimensions).
         Collider planeCollider = _plane.GetComponent<Collider>();
 
         while (currentObjects < spawnPointCount)
         {
-            // Get a random point within the plane's bounds
+            // Get a random point within the plane's bounds.
             Vector3 randomPoint = GetRandomPointOnPlane(_plane);
 
-            // Make sure the y-position is aligned with the plane
+            // Make sure the y-position is aligned with the plane.
             randomPoint.y = _plane.transform.position.y;
 
-            // Check if the random point is within the plane's collider bounds
+            // Check if the random point is within the plane's collider bounds.
+            Debug.Log("ASDASD " + planeCollider.bounds.Contains(randomPoint));
             if (planeCollider.bounds.Contains(randomPoint))
             {
                 Collider[] hitColliders = Physics.OverlapSphere(randomPoint, 10f);
@@ -141,7 +158,7 @@ public class PlaygroundManager : MonoBehaviour
                     {
                         if (hitCollider.CompareTag("Plane"))
                         {
-                            Debug.Log("Spawned " + _currentCollectible.name + " " + currentObjects+1 + " times.");
+                            Debug.Log("Spawned " + _currentCollectible.name + " " + currentObjects + " times.");
                             Instantiate(_currentCollectible, randomPoint, Quaternion.identity);
                             currentObjects++;
                             break;
@@ -151,7 +168,6 @@ public class PlaygroundManager : MonoBehaviour
             }
         }
     }
-
 
     /// <summary>
     /// Get random point on desired ARPlane.
@@ -179,7 +195,6 @@ public class PlaygroundManager : MonoBehaviour
                 maxY = point.y;
         }
 
-        // Rastgele bir x ve y koordinatı seç
         float randomX = Random.Range(minX, maxX);
         float randomY = Random.Range(minY, maxY);
 

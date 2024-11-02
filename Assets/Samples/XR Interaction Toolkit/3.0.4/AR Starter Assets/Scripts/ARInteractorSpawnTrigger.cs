@@ -1,4 +1,5 @@
 ﻿#if AR_FOUNDATION_PRESENT
+using System;
 using UnityEngine.EventSystems;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -13,6 +14,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.ARStarterAssets
     /// </summary>
     public class ARInteractorSpawnTrigger : MonoBehaviour
     {
+        [NonSerialized]
         public ARPlane playgroundPlane;
         /// <summary>
         /// The type of trigger to use to spawn an object.
@@ -169,10 +171,6 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.ARStarterAssets
 
                     if (m_RequireHorizontalUpSurface && arPlane.alignment != PlaneAlignment.HorizontalUp)
                         return;
-
-                    //TO DO: Add arPlane as a playground.
-
-                    //PlaygroundManager playgroundManager = FindObjectOfType<PlaygroundManager>();
 
                     playgroundPlane = arPlane;
                     m_ObjectSpawner.TrySpawnObject(arRaycastHit.pose.position, arPlane.normal);
