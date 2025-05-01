@@ -24,15 +24,12 @@ AR-CarGame is a mobile augmented reality (AR) game developed using Unity and AR 
 
 ---
 
-## 📲 Installation
+## 👨‍💻 Contribution
 
-### Requirements:
-- Unity 202X.X.X (AR Foundation compatible)
-- Android device
-- AR-supported smartphone (ARCore or ARKit compatible)
+Contributions are welcome! Here's how you can help:
 
-### Steps:
-1. Clone the repository:
+1. Fork this repository.
+2. Clone it to your local machine:
 
 ```bash
 git clone https://github.com/furkanpenekli/AR-CarGame.git
