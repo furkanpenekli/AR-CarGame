@@ -2,8 +2,6 @@
 
 AR-CarGame is a mobile augmented reality (AR) game developed using Unity and AR Foundation. In this game, players control a virtual car placed in the real world using their smartphone camera. The objective is to drive around, collect points.The game combines marker-based AR tracking with interactive 3D gameplay to deliver an immersive experience.
 
-![AR Gameplay Placeholder](https://via.placeholder.com/800x400.png?text=AR+Car+Game+Gameplay)
-
 ---
 
 ## 🎮 Features
